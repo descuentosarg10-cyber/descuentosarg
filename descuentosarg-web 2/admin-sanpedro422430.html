@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin - DescuentosARG</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #f9fafb;
+        }
+
+        /* MODO: WEB o ADMIN */
+        .modo-switch {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 9999;
+            background: #ff6b35; color: white;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .modo-btn {
+            background: white;
+            border: 2px solid #fcb653;
+            padding: 8px 15px;
+            margin: 0 5px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #f76b56;
+        }
+        .modo-btn.active {
+            background: #ff6b35; color: white;
+            color: #f76b56;
+        }
+
+        .vista {
+            display: none;
+        }
+        .vista.active {
+            display: block;
+        }
+
+        /* === ESTILOS WEB === */
+        header {
+            background: #ff6b35; color: white;
+            color: white;
+            padding: 15px 0;
+            border-bottom: 3px solid #fcb653;
+        }
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* CUPONES */
+        .cupones-section {
+            background: #fff3cd;
+            border: 2px solid #fcb653;
+            margin: 15px auto;
+            max-width: 1200px;
+            padding: 15px;
+        }
+        .cupones-title {
+            background: #ff6b35; color: white;
+            color: #f76b56;
+            padding: 8px 15px;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 12px;
+            border: 2px solid #f76b56;
+        }
+        .cupones-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+        }
+        .cupon-card {
+            background: white;
+            border: 2px solid #e67e22;
+            padding: 12px;
+            text-align: center;
+        }
+        .cupon-badge {
+            background: #e74c3c;
+            color: white;
+            padding: 6px 12px;
+            font-weight: bold;
+            font-size: 18px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        .cupon-text {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #555;
+        }
+        .cupon-codigo {
+            background: white;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px dashed #e67e22;
+            font-weight: bold;
+            font-size: 18px;
+            letter-spacing: 2px;
+        }
+        .cupon-btn {
+            background: #ff6b35;
+            color: white;
+            padding: 8px 20px;
+            border: 2px solid #1e7a46;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+        .cupon-btn:hover {
+            background: #229954;
+        }
+
+        /* PRODUCTOS */
+        .destacados-section {
+            background: #ff6b35; color: white;
+            padding: 20px 0;
+        }
+        .section-title {
+            background: #ff6b35; color: white;
+            color: #f76b56;
+            padding: 10px 15px;
+            font-size: 18px;
+            font-weight: bold;
+            border: 2px solid #f76b56;
+            display: inline-block;
+            margin: 0 15px 15px;
+        }
+        .productos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+        .producto-card {
+            background: white;
+            border: 2px solid #bdc3c7;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .producto-card:hover {
+            border-color: #f76b56;
+            transform: translateY(-3px);
+        }
+        .producto-image {
+            width: 100%;
+            height: 200px;
+            background: #f8f8f8;
+            position: relative;
+            border-bottom: 2px solid #ddd;
+        }
+        .producto-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 10px;
+        }
+        .producto-discount {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #e74c3c;
+            color: white;
+            padding: 5px 10px;
+            font-weight: bold;
+        }
+        .producto-info {
+            padding: 10px;
+        }
+        .producto-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            min-height: 35px;
+        }
+        .producto-prices {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .producto-price-new {
+            color: #e8503a;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* === ESTILOS ADMIN === */
+        .admin-header {
+            background: #ff6b35; color: white;
+            color: white;
+            padding: 20px;
+            border-bottom: 3px solid #fcb653;
+        }
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px;
+        }
+        .admin-tab {
+            background: white;
+            border: 2px solid #f76b56;
+            padding: 12px 30px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #f76b56;
+        }
+        .admin-tab.active {
+            background: #ff6b35; color: white;
+            color: white;
+        }
+        .admin-content {
+            display: none;
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            padding: 25px;
+            border: 2px solid #ddd;
+        }
+        .admin-content.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            font-family: Arial, sans-serif;
+        }
+        .btn-primary {
+            background: #ff6b35; color: white;
+            color: white;
+            padding: 12px 30px;
+            border: 2px solid #fcb653;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+        .success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .success.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<!-- SWITCH MODO -->
+<div class="modo-switch">
+    <a href="index.html" style="background: white; border: 2px solid #fcb653; padding: 8px 15px; text-decoration: none; font-weight: bold; color: #f76b56; margin-right: 10px;">← VOLVER A WEB</a>
+    <button class="modo-btn active">ADMIN</button>
+</div>
+
+<!-- === VISTA WEB === -->
+<div id="vista-web" class="vista">
+    <header>
+        <div class="header-container">
+            <div class="logo">DESCUENTOSARG</div>
+        </div>
+    </header>
+
+    <!-- CUPONES -->
+    <section class="cupones-section">
+        <div class="cupones-title">🔥 CUPONES MERCADOLIBRE ACTIVOS</div>
+        <div class="cupones-grid" id="cuponesGrid"></div>
+    </section>
+
+    <!-- PRODUCTOS -->
+    <section class="destacados-section">
+        <div class="section-title">★ OFERTAS DESTACADAS ★</div>
+    </section>
+
+    <div class="productos-grid" id="productosGrid"></div>
+</div>
+
+<!-- === VISTA ADMIN === -->
+<div id="vista-admin" class="vista active">
+    <div class="admin-header">
+        <h1>PANEL DE ADMINISTRACIÓN</h1>
+    </div>
+
+    <div class="admin-tabs">
+        <div class="admin-tab active" onclick="cambiarTab('productos')">PRODUCTOS</div>
+        <div class="admin-tab" onclick="cambiarTab('gestionar')">GESTIONAR</div>
+        <div class="admin-tab" onclick="cambiarTab('cupones')">CUPONES ML</div>
+    </div>
+
+    <div id="successProducto" class="success">✅ Producto publicado!</div>
+    <div id="successCupon" class="success">✅ Cupón agregado!</div>
+
+    <!-- TAB PRODUCTOS -->
+    <div id="tab-productos" class="admin-content active">
+        <h2>AGREGAR PRODUCTO</h2>
+        <form id="formProducto">
+            <div class="form-group">
+                <label>Título *</label>
+                <input type="text" id="titulo" required>
+            </div>
+            <div class="form-group">
+                <label><input type="checkbox" id="sinPrecioAnterior"> Sin precio anterior</label>
+            </div>
+            <div class="form-group">
+                <label>Precio Anterior</label>
+                <input type="number" id="precioAnterior">
+            </div>
+            <div class="form-group">
+                <label>Precio Actual *</label>
+                <input type="number" id="precioActual" required>
+            </div>
+            <div class="form-group">
+                <label>Imagen URL *</label>
+                <input type="url" id="imagen" required>
+            </div>
+            <div class="form-group">
+                <label>Link *</label>
+                <input type="url" id="link" required>
+            </div>
+            <div class="form-group">
+                <label>Categoría *</label>
+                <select id="categoria" required>
+                    <option value="">Seleccionar...</option>
+                    <option value="electronica">Electrónica</option>
+                    <option value="ropa">Ropa</option>
+                    <option value="hogar">Hogar</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Tienda *</label>
+                <select id="tiendaSelect" required onchange="toggleTiendaOtra()">
+                    <option value="">Seleccionar...</option>
+                    <option value="MercadoLibre">MercadoLibre</option>
+                    <option value="otra">Otra tienda...</option>
+                </select>
+                <input type="text" id="tiendaOtra" placeholder="Nombre de la tienda" style="display: none; margin-top: 10px;">
+            </div>
+            <div class="form-group">
+                <label><input type="checkbox" id="destacado"> Destacado</label>
+            </div>
+            <button type="submit" class="btn-primary">PUBLICAR</button>
+        </form>
+    </div>
+
+    <!-- TAB GESTIONAR -->
+    <div id="tab-gestionar" class="admin-content">
+        <h2>GESTIONAR PRODUCTOS</h2>
+        <button onclick="cargarProductosAdmin()" class="btn-primary" style="margin-bottom: 20px;">RECARGAR LISTA</button>
+        <div id="productosAdminLista"></div>
+    </div>
+
+    <!-- TAB CUPONES -->
+    <div id="tab-cupones" class="admin-content">
+        <h2>AGREGAR CUPÓN ML</h2>
+        <form id="formCupon">
+            <div class="form-group">
+                <label>Monto Descuento *</label>
+                <input type="text" id="cuponMonto" placeholder="$10.000" required>
+            </div>
+            <div class="form-group">
+                <label>Compra Mínima *</label>
+                <input type="text" id="cuponMinimo" placeholder="$75.000" required>
+            </div>
+            <div class="form-group">
+                <label>Código *</label>
+                <input type="text" id="cuponCodigo" placeholder="FECHASDOBLES" required>
+            </div>
+            <div class="form-group">
+                <label>
+                    <input type="checkbox" id="cuponTerminaHoy" style="width: auto; margin-right: 5px;">
+                    Termina hoy (se oculta automáticamente a las 00:00 hs)
+                </label>
+            </div>
+            <button type="submit" class="btn-primary">AGREGAR CUPÓN</button>
+        </form>
+        <hr style="margin: 20px 0;">
+        <div id="cuponesLista"></div>
+    </div>
+</div>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyN-Eebrbj3QgN2QGJ_01qPZGPr-v1wfpGHuxAcRsZcr4FbF-c6C_9YANqtxmRgSAPg/exec';
+
+// Toggle tienda personalizada
+function toggleTiendaOtra() {
+    const select = document.getElementById('tiendaSelect');
+    const input = document.getElementById('tiendaOtra');
+    
+    if (select.value === 'otra') {
+        input.style.display = 'block';
+        input.required = true;
+    } else {
+        input.style.display = 'none';
+        input.required = false;
+        input.value = '';
+    }
+}
+
+// CAMBIAR MODO
+function cambiarModo(modo) {
+    document.querySelectorAll('.modo-btn').forEach(b => b.classList.remove('active'));
+    event.target.classList.add('active');
+    
+    document.querySelectorAll('.vista').forEach(v => v.classList.remove('active'));
+    document.getElementById('vista-' + modo).classList.add('active');
+    
+    if (modo === 'web') {
+        cargarWeb();
+    }
+}
+
+// CAMBIAR TAB ADMIN
+function cambiarTab(tab) {
+    document.querySelectorAll('.admin-tab').forEach(t => t.classList.remove('active'));
+    
+    // Buscar y activar el tab correcto
+    const tabElement = document.querySelector(`[onclick="cambiarTab('${tab}')"]`);
+    if (tabElement) {
+        tabElement.classList.add('active');
+    }
+    
+    document.querySelectorAll('.admin-content').forEach(c => c.classList.remove('active'));
+    document.getElementById('tab-' + tab).classList.add('active');
+    
+    // Cargar datos según el tab
+    if (tab === 'cupones') {
+        listarCupones();
+    } else if (tab === 'gestionar') {
+        cargarProductosAdmin();
+    }
+}
+
+// === PRODUCTOS ===
+document.getElementById('formProducto').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const sinPrecio = document.getElementById('sinPrecioAnterior').checked;
+    let precioAnt = parseFloat(document.getElementById('precioAnterior').value) || 0;
+    const precioAct = parseFloat(document.getElementById('precioActual').value);
+    
+    const producto = {
+        timestamp: new Date().toLocaleString('es-AR'),
+        titulo: document.getElementById('titulo').value,
+        descripcion: '',
+        precioAnterior: sinPrecio ? 0 : precioAnt,
+        precioActual: precioAct,
+        descuento: sinPrecio ? 0 : Math.round(((precioAnt - precioAct) / precioAnt) * 100),
+        link: document.getElementById('link').value,
+        imagen: document.getElementById('imagen').value,
+        categoria: document.getElementById('categoria').value,
+        tienda: document.getElementById('tiendaSelect').value === 'otra' 
+            ? document.getElementById('tiendaOtra').value 
+            : document.getElementById('tiendaSelect').value,
+        destacado: document.getElementById('destacado').checked
+    };
+    
+    // Verificar si está editando
+    const editingRow = e.target.dataset.editingRow;
+    if (editingRow) {
+        producto.action = 'edit';
+        producto.rowIndex = parseInt(editingRow);
+    }
+    
+    try {
+        await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            body: JSON.stringify(producto)
+        });
+        
+        const mensaje = editingRow ? 'Producto actualizado' : 'Producto publicado';
+        alert('✅ ' + mensaje);
+        
+        document.getElementById('formProducto').reset();
+        delete e.target.dataset.editingRow;
+        document.querySelector('#formProducto button[type="submit"]').textContent = 'PUBLICAR';
+        
+        // Recargar lista si está en gestionar
+        if (document.getElementById('productosAdminLista')) {
+            setTimeout(() => cargarProductosAdmin(), 1000);
+        }
+    } catch (error) {
+        alert('Error al guardar');
+    }
+});
+
+// === CUPONES ===
+document.getElementById('formCupon').addEventListener('submit', async (e) => {
+    e.preventDefault();
+    
+    const terminaHoy = document.getElementById('cuponTerminaHoy').checked;
+    const cupon = {
+        tipo: 'cupon',
+        monto: document.getElementById('cuponMonto').value,
+        minimo: document.getElementById('cuponMinimo').value,
+        codigo: document.getElementById('cuponCodigo').value.toUpperCase(),
+        terminaHoy: terminaHoy,
+        fechaVencimiento: terminaHoy ? new Date().toDateString() : null
+    };
+    
+    try {
+        // Guardar en Google Sheets
+        const response = await fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify(cupon)
+        });
+        
+        const result = await response.json();
+        
+        if (result.result === 'success') {
+            document.getElementById('successCupon').classList.add('show');
+            document.getElementById('formCupon').reset();
+            listarCupones();
+            
+            setTimeout(() => {
+                document.getElementById('successCupon').classList.remove('show');
+            }, 3000);
+        } else {
+            alert('Error al guardar cupón');
+        }
+    } catch (error) {
+        alert('Error: ' + error);
+    }
+});
+
+async function listarCupones() {
+    try {
+        const response = await fetch(SCRIPT_URL + '?tipo=cupones');
+        const cupones = await response.json();
+        
+        const lista = document.getElementById('cuponesLista');
+        
+        if (cupones.length === 0) {
+            lista.innerHTML = '<p>No hay cupones</p>';
+            return;
+        }
+        
+        lista.innerHTML = '<h3>Cupones activos:</h3>' + cupones.map(c => `
+            <div style="border: 2px solid #ddd; padding: 10px; margin: 10px 0;">
+                <strong>${c.monto}</strong> en compras de ${c.minimo}<br>
+                Código: <strong>${c.codigo}</strong>
+                ${c.terminaHoy ? '<span style="color: red;"> (TERMINA HOY)</span>' : ''}
+                <button onclick="eliminarCupon(${c.rowIndex})" style="background: red; color: white; padding: 5px 10px; float: right;">ELIMINAR</button>
+            </div>
+        `).join('');
+    } catch (error) {
+        document.getElementById('cuponesLista').innerHTML = '<p>Error al cargar cupones</p>';
+    }
+}
+
+async function eliminarCupon(rowIndex) {
+    if (!confirm('¿Eliminar este cupón?')) return;
+    
+    try {
+        await fetch(SCRIPT_URL, {
+            method: 'POST',
+            body: JSON.stringify({
+                tipo: 'cupon',
+                action: 'delete',
+                rowIndex: rowIndex
+            })
+        });
+        
+        listarCupones();
+    } catch (error) {
+        alert('Error al eliminar');
+    }
+}
+
+// === CARGAR WEB ===
+async function cargarWeb() {
+    // Cargar productos
+    try {
+        const response = await fetch(SCRIPT_URL);
+        const data = await response.json();
+        
+        const productos = data.map((row, i) => ({
+            titulo: row.titulo,
+            precioAnterior: Number(row.precioAnterior),
+            precioActual: Number(row.precioActual),
+            descuento: Number(row.descuento),
+            link: row.link,
+            imagen: row.imagen,
+            tienda: row.tienda
+        }));
+        
+        const grid = document.getElementById('productosGrid');
+        grid.innerHTML = productos.slice(0, 12).map(p => `
+            <a href="${p.link}" target="_blank" style="text-decoration: none; color: inherit;">
+                <div class="producto-card">
+                    <div class="producto-image">
+                        <img src="${p.imagen}" alt="${p.titulo}">
+                        <div class="producto-discount">${p.descuento > 0 ? '-' + p.descuento + '%' : 'OFERTA'}</div>
+                    </div>
+                    <div class="producto-info">
+                        <div class="producto-title">${p.titulo}</div>
+                        <div class="producto-prices">
+                            <span class="producto-price-new">$${p.precioActual.toLocaleString()}</span>
+                        </div>
+                    </div>
+                </div>
+            </a>
+        `).join('');
+    } catch (error) {
+        document.getElementById('productosGrid').innerHTML = '<p style="text-align:center; padding:40px;">No hay productos cargados</p>';
+    }
+    
+    // Cargar cupones
+    const cupones = JSON.parse(localStorage.getItem('cupones') || '[]');
+    const grid = document.getElementById('cuponesGrid');
+    
+    if (cupones.length === 0) {
+        grid.innerHTML = '<div class="cupon-card"><div class="cupon-text">No hay cupones activos</div></div>';
+    } else {
+        grid.innerHTML = cupones.map(c => `
+            <div class="cupon-card">
+                <div class="cupon-badge">${c.monto}</div>
+                <div class="cupon-text">Compra mínima: ${c.minimo}</div>
+                <div class="cupon-codigo">${c.codigo}</div>
+                <button class="cupon-btn" onclick="copiarCodigo('${c.codigo}')">COPIAR CÓDIGO</button>
+            </div>
+        `).join('');
+    }
+}
+
+function copiarCodigo(codigo) {
+    navigator.clipboard.writeText(codigo).then(() => {
+        alert('✅ Código copiado: ' + codigo);
+    });
+}
+// === GESTIONAR PRODUCTOS ===
+async function cargarProductosAdmin() {
+    try {
+        const response = await fetch(SCRIPT_URL);
+        const productos = await response.json();
+        
+        const lista = document.getElementById('productosAdminLista');
+        
+        if (productos.length === 0) {
+            lista.innerHTML = '<p>No hay productos cargados</p>';
+            return;
+        }
+        
+        lista.innerHTML = productos.map(p => `
+            <div style="border: 2px solid #ddd; padding: 15px; margin: 10px 0; background: #f9f9f9;">
+                <div style="display: flex; justify-content: space-between; align-items: start; gap: 15px;">
+                    <a href="${p.link}" target="_blank" style="flex: 1; text-decoration: none; color: inherit;">
+                        <div style="cursor: pointer;">
+                            <strong>${p.titulo}</strong><br>
+                            <small>Tienda: ${p.tienda} | Categoría: ${p.categoria}</small><br>
+                            <small>Precio: $${p.precioActual.toLocaleString()}</small>
+                            ${p.descuento > 0 ? '<small> | Descuento: -' + p.descuento + '%</small>' : ''}
+                        </div>
+                    </a>
+                    <div style="display: flex; gap: 10px; flex-shrink: 0;">
+                        <button onclick="editarProducto(${p.rowIndex})" 
+                                style="background: #3498db; color: white; padding: 8px 15px; border: none; cursor: pointer; font-weight: bold;">
+                            EDITAR
+                        </button>
+                        <button onclick="eliminarProducto(${p.rowIndex}, '${p.titulo.replace(/'/g, "\\'")}')" 
+                                style="background: #e74c3c; color: white; padding: 8px 15px; border: none; cursor: pointer; font-weight: bold;">
+                            ELIMINAR
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `).join('');
+    } catch (error) {
+        alert('Error al cargar productos');
+    }
+}
+
+async function editarProducto(rowIndex) {
+    try {
+        // Obtener todos los productos
+        const response = await fetch(SCRIPT_URL);
+        const productos = await response.json();
+        
+        // Buscar el producto por rowIndex
+        const producto = productos.find(p => p.rowIndex === rowIndex);
+        
+        if (!producto) {
+            alert('Producto no encontrado');
+            return;
+        }
+        
+        // Cambiar a tab PRODUCTOS
+        cambiarTab('productos');
+        
+        // Rellenar el formulario
+        document.getElementById('titulo').value = producto.titulo;
+        document.getElementById('precioAnterior').value = producto.precioAnterior || '';
+        document.getElementById('precioActual').value = producto.precioActual;
+        document.getElementById('imagen').value = producto.imagen;
+        document.getElementById('link').value = producto.link;
+        document.getElementById('categoria').value = producto.categoria;
+        
+        // Tienda
+        if (producto.tienda === 'MercadoLibre') {
+            document.getElementById('tiendaSelect').value = 'MercadoLibre';
+        } else {
+            document.getElementById('tiendaSelect').value = 'otra';
+            toggleTiendaOtra();
+            document.getElementById('tiendaOtra').value = producto.tienda;
+        }
+        
+        document.getElementById('destacado').checked = producto.destacado || false;
+        
+        // Sin precio anterior
+        if (producto.precioAnterior === 0 || !producto.precioAnterior) {
+            document.getElementById('sinPrecioAnterior').checked = true;
+            document.getElementById('precioAnterior').disabled = true;
+        }
+        
+        // Scroll al formulario
+        setTimeout(() => {
+            document.getElementById('formProducto').scrollIntoView({ behavior: 'smooth' });
+        }, 100);
+        
+        // Guardar rowIndex para actualizar
+        document.getElementById('formProducto').dataset.editingRow = rowIndex;
+        
+        // Cambiar texto del botón
+        document.querySelector('#formProducto button[type="submit"]').textContent = 'GUARDAR CAMBIOS';
+        
+    } catch (error) {
+        alert('Error al cargar producto: ' + error.message);
+    }
+}
+
+async function eliminarProducto(rowIndex, titulo) {
+    if (!confirm('¿Eliminar "' + titulo + '"?')) {
+        return;
+    }
+    
+    try {
+        await fetch(SCRIPT_URL, {
+            method: 'POST',
+            mode: 'no-cors',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                action: 'delete',
+                rowIndex: rowIndex
+            })
+        });
+        
+        alert('✅ Producto eliminado');
+        setTimeout(() => {
+            cargarProductosAdmin();
+        }, 1000);
+    } catch (error) {
+        alert('Error al eliminar');
+    }
+}
+
+
+// CARGAR AL INICIO
+cargarWeb();
+</script>
+
+</body>
+</html>
