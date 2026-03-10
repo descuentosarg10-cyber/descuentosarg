@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>🇦🇷 DescuentosARG - Los Mejores Descuentos de Argentina</title>
+    <link rel="icon" type="image/x-icon" href="favicon.ico">
+    <link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="favicon-16.png">
+    <link rel="apple-touch-icon" sizes="192x192" href="logo-header.png">
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        
+        body {
+            font-family: Arial, sans-serif;
+            background: #f9fafb;
+        }
+
+        /* MODO: WEB o ADMIN */
+        .modo-switch {
+            position: fixed;
+            top: 10px;
+            right: 10px;
+            z-index: 9999;
+            background: #ff6b35;
+            padding: 10px;
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.3);
+        }
+        .modo-btn {
+            background: white;
+            border: 2px solid #fcb653;
+            padding: 8px 15px;
+            margin: 0 5px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #f76b56;
+        }
+        .modo-btn.active {
+            background: #ff6b35; color: white;
+            color: #f76b56;
+        }
+
+        .vista {
+            display: none;
+        }
+        .vista.active {
+            display: block;
+        }
+
+        /* === ESTILOS WEB === */
+        header {
+            background: #ff6b35;
+            color: #1f2933;
+            padding: 15px 0;
+            border-bottom: 3px solid #fcb653;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+        .header-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            font-size: 28px;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+
+        /* TÍTULOS DE SECCIÓN */
+        h2.seccion-titulo {
+            background: #ff6b35;
+            color: white;
+            padding: 12px 20px;
+            text-align: center;
+            font-size: 24px;
+            margin: 20px auto;
+            max-width: 1200px;
+        }
+        
+        /* CUPONES */
+        .cupones-section {
+            background: #fef5e7;
+            border: 2px solid #fcb653;
+            margin: 15px auto;
+            max-width: 1200px;
+            padding: 15px;
+        }
+        .cupones-title {
+            background: #ff6b35;
+            color: white;
+            padding: 8px 15px;
+            font-weight: bold;
+            font-size: 16px;
+            margin-bottom: 12px;
+            border: 2px solid #f76b56;
+        }
+        .cupones-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 12px;
+        }
+        .cupon-card {
+            background: white;
+            border: 1px solid #fcb653;
+            padding: 12px;
+            text-align: center;
+            box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+            transition: all 0.2s ease;
+        }
+        .cupon-card:hover {
+            box-shadow: 0 4px 12px rgba(252, 182, 83, 0.2);
+            transform: translateY(-2px);
+        }
+        .cupon-badge {
+            background: #e74c3c;
+            color: white;
+            padding: 6px 12px;
+            font-weight: bold;
+            font-size: 18px;
+            display: inline-block;
+            margin-bottom: 8px;
+        }
+        .cupon-text {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: #555;
+        }
+        .cupon-codigo {
+            background: white;
+            padding: 10px;
+            margin: 10px 0;
+            border: 2px dashed #e67e22;
+            font-weight: bold;
+            font-size: 18px;
+            letter-spacing: 2px;
+        }
+        .cupon-btn {
+            background: #ff6b35;
+            color: white;
+            padding: 8px 20px;
+            border: 2px solid #1e7a46;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+        .cupon-btn:hover {
+            background: #229954;
+        }
+
+        /* PRODUCTOS */
+        .destacados-section {
+            background: #ff6b35;
+            padding: 20px 0;
+        }
+        .section-title {
+            background: #ff6b35;
+            color: white;
+            padding: 10px 15px;
+            font-size: 18px;
+            font-weight: bold;
+            border: 2px solid #ff6b35;
+            display: inline-block;
+            margin: 0 15px 15px;
+        }
+        .productos-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+            gap: 15px;
+            max-width: 1200px;
+            margin: 20px auto;
+            padding: 0 15px;
+        }
+        .producto-card {
+            background: white;
+            border: 2px solid #bdc3c7;
+            cursor: pointer;
+            transition: transform 0.2s, border-color 0.2s;
+        }
+        .producto-card:hover {
+            border-color: #f76b56;
+            transform: translateY(-3px);
+        }
+        .producto-image {
+            width: 100%;
+            height: 200px;
+            background: #f8f8f8;
+            position: relative;
+            border-bottom: 2px solid #ddd;
+        }
+        .producto-image img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+            padding: 10px;
+        }
+        .producto-discount {
+            position: absolute;
+            top: 8px;
+            right: 8px;
+            background: #e74c3c;
+            color: white;
+            padding: 5px 10px;
+            font-weight: bold;
+        }
+        .producto-info {
+            padding: 10px;
+        }
+        .producto-title {
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 8px;
+            min-height: 35px;
+        }
+        .producto-prices {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 8px;
+        }
+        .producto-price-new {
+            color: #e8503a;
+            font-weight: bold;
+            font-size: 18px;
+        }
+
+        /* === ESTILOS ADMIN === */
+        .admin-header {
+            background: #ff6b35;
+            color: #fcb653;
+            padding: 20px;
+            border-bottom: 3px solid #fcb653;
+        }
+        .admin-tabs {
+            display: flex;
+            gap: 10px;
+            margin: 20px;
+        }
+        .admin-tab {
+            background: white;
+            border: 2px solid #f76b56;
+            padding: 12px 30px;
+            cursor: pointer;
+            font-weight: bold;
+            color: #f76b56;
+        }
+        .admin-tab.active {
+            background: #ff6b35;
+            color: #fcb653;
+        }
+        .admin-content {
+            display: none;
+            max-width: 800px;
+            margin: 20px auto;
+            background: white;
+            padding: 25px;
+            border: 2px solid #ddd;
+        }
+        .admin-content.active {
+            display: block;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        input, select, textarea {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #ddd;
+            font-family: Arial, sans-serif;
+        }
+        .btn-primary {
+            background: #ff6b35;
+            color: #fcb653;
+            padding: 12px 30px;
+            border: 2px solid #fcb653;
+            font-weight: bold;
+            cursor: pointer;
+            width: 100%;
+        }
+        .success {
+            background: #d4edda;
+            border: 2px solid #28a745;
+            padding: 15px;
+            margin-bottom: 20px;
+            display: none;
+        }
+        .success.show {
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+<!-- SWITCH MODO -->
+
+
+<!-- === VISTA WEB === -->
+<div id="vista-web" class="vista active">
+    <header>
+        <div class="header-container">
+            <div class="logo" style="display: flex; align-items: center; gap: 12px;">
+                    <img src="logo-header.png" alt="Logo" style="height: 40px;">
+                    <span style="font-size: 28px; font-weight: bold; letter-spacing: 2px; color: white;">DESCUENTOSARG</span>
+                    <img src="bandera-ar.png" alt="🇦🇷" style="height: 24px;">
+                </div>
+        </div>
+    </header>
+
+    <!-- CUPONES (desplegable) -->
+    <section class="cupones-section">
+        <div class="cupones-title" onclick="toggleCupones()" style="cursor: pointer; display: flex; justify-content: space-between; align-items: center;">
+            <span id="cuponesHeaderText">🔥 CUPONES MERCADOLIBRE</span>
+            <span id="cuponesToggle">▼</span>
+        </div>
+        <div class="cupones-grid" id="cuponesGrid" style="display: none;"></div>
+    </section>
+
+    <!-- PRODUCTOS -->
+    <section class="destacados-section">
+        <div class="section-title">★ OFERTAS DESTACADAS ★</div>
+    </section>
+
+    <div class="productos-grid" id="productosGrid"></div>
+</div>
+
+<!-- === VISTA ADMIN === -->
+<div id="vista-admin" class="vista">
+    <div class="admin-header">
+        <h1>PANEL DE ADMINISTRACIÓN</h1>
+    </div>
+
+    <div class="admin-tabs">
+        <div class="admin-tab active" onclick="cambiarTab('productos')">PRODUCTOS</div>
+        <div class="admin-tab" onclick="cambiarTab('gestionar')">GESTIONAR</div>
+        <div class="admin-tab" onclick="cambiarTab('cupones')">CUPONES ML</div>
+    </div>
+
+    <div id="successProducto" class="success">✅ Producto publicado!</div>
+    <div id="successCupon" class="success">✅ Cupón agregado!</div>
+
+    <!-- TAB PRODUCTOS -->
+    <div id="tab-productos" class="admin-content active">
+        <h2>AGREGAR PRODUCTO</h2>
+        <form id="formProducto">
+            <div class="form-group">
+                <label>Título *</label>
+                <input type="text" id="titulo" required>
+            </div>
+            <div class="form-group">
+                <label><input type="checkbox" id="sinPrecioAnterior"> Sin precio anterior</label>
+            </div>
+            <div class="form-group">
+                <label>Precio Anterior</label>
+                <input type="number" id="precioAnterior">
+            </div>
+            <div class="form-group">
+                <label>Precio Actual *</label>
+                <input type="number" id="precioActual" required>
+            </div>
+            <div class="form-group">
+                <label>Imagen URL *</label>
+                <input type="url" id="imagen" required>
+            </div>
+            <div class="form-group">
+                <label>Link *</label>
+                <input type="url" id="link" required>
+            </div>
+            <div class="form-group">
+                <label>Categoría *</label>
+                <select id="categoria" required>
+                    <option value="">Seleccionar...</option>
+                    <option value="electronica">Electrónica</option>
+                    <option value="ropa">Ropa</option>
+                    <option value="hogar">Hogar</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label>Tienda *</label>
+                <input type="text" id="tienda" required>
+            </div>
+            <div class="form-group">
+                <label><input type="checkbox" id="destacado"> Destacado</label>
+            </div>
+            <button type="submit" class="btn-primary">PUBLICAR</button>
+        </form>
+    </div>
+
+    <!-- TAB GESTIONAR -->
+    <div id="tab-gestionar" class="admin-content">
+        <h2>GESTIONAR PRODUCTOS</h2>
+        <button onclick="cargarProductosAdmin()" class="btn-primary" style="margin-bottom: 20px;">RECARGAR LISTA</button>
+        <div id="productosAdminLista"></div>
+    </div>
+
+    <!-- TAB CUPONES -->
+    <div id="tab-cupones" class="admin-content">
+        <h2>AGREGAR CUPÓN ML</h2>
+        <form id="formCupon">
+            <div class="form-group">
+                <label>Monto Descuento *</label>
+                <input type="text" id="cuponMonto" placeholder="$10.000" required>
+            </div>
+            <div class="form-group">
+                <label>Compra Mínima *</label>
+                <input type="text" id="cuponMinimo" placeholder="$75.000" required>
+            </div>
+            <div class="form-group">
+                <label>Código *</label>
+                <input type="text" id="cuponCodigo" placeholder="FECHASDOBLES" required>
+            </div>
+            <button type="submit" class="btn-primary">AGREGAR CUPÓN</button>
+        </form>
+        <hr style="margin: 20px 0;">
+        <div id="cuponesLista"></div>
+    </div>
+</div>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyN-Eebrbj3QgN2QGJ_01qPZGPr-v1wfpGHuxAcRsZcr4FbF-c6C_9YANqtxmRgSAPg/exec';
+
+// === CARGAR WEB ===
+async function cargarWeb() {
+    // 1. CARGAR CUPONES INMEDIATAMENTE (están en localStorage)
+    cargarCupones();
+    
+    // 2. MOSTRAR "CARGANDO..." EN PRODUCTOS
+    const grid = document.getElementById('productosGrid');
+    grid.innerHTML = '<p style="text-align:center; padding:40px; color:#999;">🔄 Cargando ofertas...</p>';
+    
+    // 3. INTENTAR CARGAR DESDE CACHÉ PRIMERO
+    const cache = localStorage.getItem('productos-cache');
+    const cacheTime = localStorage.getItem('productos-cache-time');
+    const ahora = Date.now();
+    
+    // Si hay caché y tiene menos de 5 minutos, mostrarlo inmediatamente
+    if (cache && cacheTime && (ahora - Number(cacheTime)) < 300000) {
+        mostrarProductos(JSON.parse(cache));
+    }
+    
+    // 4. CARGAR PRODUCTOS FRESCOS DEL SERVIDOR (en background)
+    const timeout = new Promise((_, reject) => 
+        setTimeout(() => reject(new Error('Timeout')), 10000)
+    );
+    
+    try {
+        const response = await Promise.race([fetch(SCRIPT_URL), timeout]);
+        const data = await response.json();
+        
+        // Guardar en caché
+        localStorage.setItem('productos-cache', JSON.stringify(data));
+        localStorage.setItem('productos-cache-time', ahora.toString());
+        
+        // Mostrar productos
+        mostrarProductos(data);
+    } catch (error) {
+        // Si falla y NO hay caché, mostrar error
+        if (!cache) {
+            grid.innerHTML = '<p style="text-align:center; padding:40px; color:#999;">Error al cargar productos. Intenta recargar la página.</p>';
+        }
+        // Si hay caché, ya se mostró antes, no hacer nada
+    }
+}
+
+function mostrarProductos(data) {
+    const productos = data.map((row, i) => ({
+        titulo: row.titulo,
+        precioAnterior: Number(row.precioAnterior),
+        precioActual: Number(row.precioActual),
+        descuento: Number(row.descuento),
+        link: row.link,
+        imagen: row.imagen,
+        tienda: row.tienda
+    }));
+    
+    const grid = document.getElementById('productosGrid');
+    grid.innerHTML = productos.slice(0, 12).map(p => `
+        <a href="${p.link}" target="_blank" style="text-decoration: none; color: inherit;">
+            <div class="producto-card">
+                <div class="producto-image">
+                    <img src="${p.imagen}" alt="${p.titulo}" loading="lazy">
+                    <div class="producto-discount">${p.descuento > 0 ? '-' + p.descuento + '%' : 'OFERTA'}</div>
+                </div>
+                <div class="producto-info">
+                    <div class="producto-title">${p.titulo}</div>
+                    <div class="producto-prices">
+                        <span class="producto-price-new">$${p.precioActual.toLocaleString()}</span>
+                    </div>
+                </div>
+            </div>
+        </a>
+    `).join('');
+}
+
+function cargarCupones() {
+    // Cargar cupones desde Google Sheets
+    fetch(SCRIPT_URL + '?tipo=cupones')
+        .then(response => response.json())
+        .then(cupones => {
+            // Filtrar cupones vencidos (termina hoy)
+            const hoy = new Date().toDateString();
+            const cuponesActivos = cupones.filter(c => {
+                if (c.terminaHoy && c.fechaVencimiento) {
+                    return c.fechaVencimiento === hoy;
+                }
+                return true;
+            });
+            
+            const gridCupones = document.getElementById('cuponesGrid');
+            const headerText = document.getElementById('cuponesHeaderText');
+            
+            if (cuponesActivos.length === 0) {
+                headerText.textContent = '🔥 CUPONES MERCADOLIBRE';
+                gridCupones.innerHTML = '<div class="cupon-card"><div class="cupon-text">No hay cupones activos</div></div>';
+            } else {
+                headerText.textContent = `🔥 CUPONES MERCADOLIBRE (${cuponesActivos.length} activos)`;
+                gridCupones.innerHTML = cuponesActivos.map(c => `
+                    <div class="cupon-card">
+                        <div class="cupon-badge">${c.monto}</div>
+                        <div class="cupon-text">Compra mínima: ${c.minimo}</div>
+                        <div class="cupon-codigo">${c.codigo}</div>
+                        <button class="cupon-btn" onclick="copiarCodigo('${c.codigo}')">COPIAR CÓDIGO</button>
+                    </div>
+                `).join('');
+            }
+        })
+        .catch(error => {
+            console.log('Error al cargar cupones:', error);
+            document.getElementById('cuponesHeaderText').textContent = '🔥 CUPONES MERCADOLIBRE';
+            document.getElementById('cuponesGrid').innerHTML = '<div class="cupon-card"><div class="cupon-text">No hay cupones activos</div></div>';
+        });
+}
+
+function toggleCupones() {
+    const grid = document.getElementById('cuponesGrid');
+    const toggle = document.getElementById('cuponesToggle');
+    
+    if (grid.style.display === 'none') {
+        grid.style.display = 'grid';
+        toggle.textContent = '▲';
+    } else {
+        grid.style.display = 'none';
+        toggle.textContent = '▼';
+    }
+}
+
+function copiarCodigo(codigo) {
+    navigator.clipboard.writeText(codigo).then(() => {
+        alert('✅ Código copiado: ' + codigo);
+    });
+}
+
+cargarWeb();
+</script>
+
+</body>
+</html>
